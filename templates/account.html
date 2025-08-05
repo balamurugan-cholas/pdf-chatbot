@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | PDF Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap + Google Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding-top: 70px;
+      background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+      overflow: hidden;
+    }
+
+    .navbar {
+      padding: 0.75rem 1.5rem;
+      background-color: #ffffffcc;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .full-height {
+      height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .register-container {
+      display: flex;
+      width: 90%;
+      max-width: 1200px;
+      height: 90%;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    .carousel-section {
+      flex: 1;
+      background: #f8f9fa;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carousel-text {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: #333;
+      max-width: 80%;
+    }
+
+    .typing {
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typing 5s steps(40, end) 1;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    .carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .form-section {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(25px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .glass-form {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.25);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      animation: slideUp 0.8s ease-in-out;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .glass-form h3 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 30px;
+      padding: 0.75rem 1rem;
+      border: none;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 0 3px rgba(255, 118, 179, 0.3);
+    }
+
+    .btn-register {
+      width: 100%;
+      border-radius: 30px;
+      padding: 0.75rem;
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      border: none;
+      color: white;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-register:hover {
+      transform: scale(1.03);
+      box-shadow: 0 5px 15px rgba(255, 118, 179, 0.4);
+    }
+
+    .switch-form-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      color: #333;
+      font-size: 0.95rem;
+      text-decoration: none;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .switch-form-link::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      left: 0;
+      bottom: -2px;
+      background-color: #333;
+      transition: width 0.3s ease;
+    }
+
+    .switch-form-link:hover::after {
+      width: 100%;
+    }
+
+    .form-toggle { display: none; }
+    .form-toggle.active { display: block; }
+
+    @media (max-width: 768px) {
+      .register-container {
+        flex-direction: column;
+        height: auto;
+      }
+      .carousel-section {
+        height: 250px;
+        order: 2;
+      }
+      .form-section {
+        padding: 1.5rem;
+        order: 1;
+      }
+      .carousel-text {
+        top: 5%;
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar d-flex justify-content-between align-items-center">
+  <div class="fw-bold fs-5">
+    <button class="btn btn-outline-dark me-2 d-md-none" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+      ☰
+    </button>
+    PDF Chatbot
+  </div>
+  <div>
+    {% if request.path not in ['/register', '/login'] and 'user' not in session %}
+      <a href="/login" class="btn btn-outline-primary btn-sm me-2">Login</a>
+      <a href="/register" class="btn btn-primary btn-sm">Register</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- Main Container -->
+<div class="full-height">
+  <div class="register-container">
+    <!-- Carousel -->
+    <div class="carousel-section position-relative">
+      <div class="carousel-text typing">Meet your Smart PDF Chatbot Assistant 🤖</div>
+      <div id="carouselImages" class="carousel slide h-100" data-bs-ride="carousel">
+        <div class="carousel-inner h-100">
+          <div class="carousel-item active h-100">
+            <img src="https://source.unsplash.com/800x600/?ai,chatbot" alt="AI Image 1">
+          </div>
+          <div class="carousel-item h-100">
+            <img src="https://source.unsplash.com/800x600/?technology,abstract" alt="AI Image 2">
+          </div>
+          <div class="carousel-item h-100">
+            <img src="https://source.unsplash.com/800x600/?pdf,files" alt="AI Image 3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <!-- Register Form -->
+<div class="glass-form form-toggle active" id="registerForm">
+  <h3>Create Account</h3>
+  <form method="POST" enctype="multipart/form-data" action="{{ url_for('account') }}">
+    <input type="hidden" name="form_type" value="register">
+    
+    <input type="text" name="username" class="form-control" placeholder="Username" required>
+    <input type="password" name="password" class="form-control" placeholder="Password" required>
+    
+    <select name="role" class="form-select">
+      <option value="user">Regular User</option>
+      <option value="admin">Admin</option>
+    </select>
+
+    <input type="file" name="profile_pic" class="form-control" accept="image/*" required>
+
+    <button type="submit" class="btn btn-register mt-3">Register</button>
+
+    <span class="switch-form-link" onclick="switchForm('login')">Already have an account? Login</span>
+  </form>
+</div>
+
+      <!-- Login Form -->
+<div class="glass-form form-toggle" id="loginForm">
+  <h3>Welcome Back</h3>
+  <form method="POST" action="{{ url_for('account') }}">
+    <input type="hidden" name="form_type" value="login">
+
+    <input type="text" name="username" class="form-control" placeholder="Username" required>
+    <input type="password" name="password" class="form-control" placeholder="Password" required>
+
+    <button type="submit" class="btn btn-register mt-3">Login</button>
+    <span class="switch-form-link" onclick="switchForm('register')">Don't have an account? Register</span>
+    <div>
+      {% for message in get_flashed_messages() %}
+        <div class="alert alert-info mt-3">{{ message }}</div>
+      {% endfor %}
+    </div>
+  </form>
+</div>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarLabel">
+  <div class="offcanvas-header">
+    <h5 id="sidebarLabel">PDF Chatbot</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if request.path not in ['/register', '/login'] and 'user' in session %}
+      <div class="d-flex align-items-center mb-4">
+        <img src="{{ session['user']['profile_pic'] if session['user']['profile_pic'] else url_for('static', filename='images/default-avatar.png') }}"
+             alt="Avatar" class="rounded-circle me-2" width="36" height="36">
+        <strong>{{ session['user']['username'] }}</strong>
+      </div>
+      <form action="{{ url_for('logout') }}" method="post">
+        <button class="btn btn-outline-danger w-100">Logout</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const carousel = document.querySelector('#carouselImages');
+  new bootstrap.Carousel(carousel, {
+    interval: 3500,
+    ride: 'carousel',
+    pause: false
+  });
+
+  function switchForm(target) {
+    document.getElementById('registerForm').classList.remove('active');
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById(target + 'Form').classList.add('active');
+  }
+</script>
+
+<script>
+  const flashMessages = {{ get_flashed_messages() | tojson }};
+  if (flashMessages.some(msg => msg.includes("successful"))) {
+    switchForm("login");
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Flask-related
+instance/
+.webassets-cache
+
+# SQLite DB journal (if generated)
+*.db-journal
+
+# VSCode settings
+.vscode/
+
+# Environment file (never expose your secrets)
+.env
+
+# Virtual environment folders
+venv/
+env/
+ENV/
+
+# Static uploads (optional: ignore if they’re temp/user uploads)
+static/profile_pics/
+static/uploads/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

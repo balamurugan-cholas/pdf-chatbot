@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat | PDF Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    .container-fluid {
+      height: calc(100vh - 56px); /* minus navbar height */
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: #f7f7f8;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .sidebar img {
+      border: 2px solid #ddd;
+      object-fit: cover;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .navbar {
+      height: 56px;
+      padding: 0.75rem 1.5rem;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background-color: #fefefe;
+    }
+
+    .chat-message {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      position: relative;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .user-msg {
+      margin-left: auto;
+      background-color: #dcfce7;
+      color: #065f46;
+    }
+
+    .bot-msg {
+      margin-right: auto;
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .chat-form {
+      padding: 1rem;
+      border-top: 1px solid #ddd;
+      background-color: #fff;
+    }
+
+    .input-group input {
+      border-radius: 20px;
+      padding-left: 15px;
+    }
+
+    .input-group .btn {
+      border-radius: 20px;
+      margin-left: 10px;
+    }
+
+    .dot-typing {
+      display: inline-block;
+      position: relative;
+      width: 60px;
+      height: 20px;
+    }
+
+    .dot-typing::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 8px;
+      height: 10px;
+      width: 10px;
+      border-radius: 5px;
+      background-color: #999;
+      animation: typing 1.5s infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes typing {
+      0% { box-shadow: 8px 0 0 #999, 16px 0 0 #999; }
+      33% { box-shadow: 8px 0 0 #ccc, 16px 0 0 #999; }
+      66% { box-shadow: 8px 0 0 #999, 16px 0 0 #ccc; }
+      100% { box-shadow: 8px 0 0 #999, 16px 0 0 #999; }
+    }
+
+    .stylish-select {
+      background-color: #f8f9fa;
+      border: 1.5px solid #ced4da;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .stylish-select option {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .container-fluid {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar d-flex justify-content-between align-items-center">
+  <div class="fw-bold fs-5">
+    <button class="btn btn-outline-dark me-2 d-md-none" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+      ☰
+    </button>
+    PDF Chatbot
+  </div>
+  <div>
+    {% if 'user' not in session %}
+      <a href="{{ url_for('account') }}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+      <a href="/register" class="btn btn-primary btn-sm">Register</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <!-- Sidebar -->
+  <div class="sidebar d-none d-md-flex">
+    {% if 'user' in session %}
+      <div class="d-flex align-items-center mb-4">
+        <img src="{{ session.user.profile_pic if session.user.profile_pic else url_for('static', filename='images/default-avatar.png') }}"
+             alt="Avatar" class="rounded-circle me-2" width="36" height="36">
+        <strong>{{ session.user.username }}</strong>
+      </div>
+    {% endif %}
+
+    <h5 class="mb-3">🗂️ Select a PDF</h5>
+    <form action="/select" method="post">
+      <div class="mb-3">
+        <select name="selected_pdf" class="form-select stylish-select" required>
+          {% for pdf in pdf_files %}
+            <option value="{{ pdf }}">{{ pdf[:25] ~ ('...' if pdf|length > 25 else '') }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 shadow-sm">🚀 Load PDF</button>
+    </form>
+
+    {% if 'user' in session %}
+      <form action="{{ url_for('logout') }}" method="post" class="mt-auto">
+        <button class="btn btn-outline-danger w-100 mt-4">Logout</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Chat Area -->
+    <div class="chat-box" id="chatBox">
+      {% for message in chat_log %}
+        <div class="chat-message {% if message.role == 'user' %}user-msg{% else %}bot-msg{% endif %}">
+          {{ message.content }}
+          <div class="timestamp">{{ message.timestamp }}</div>
+        </div>
+      {% endfor %}
+      <div id="typingIndicator" class="chat-message bot-msg" style="display: none;">
+        <span class="dot-typing"></span>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <form method="POST" action="{{ url_for('chat') }}" class="chat-form" onsubmit="showTyping()">
+      <div class="input-group align-items-center">
+        <input type="text" name="message" class="form-control py-2 px-3 rounded-pill shadow-sm" placeholder="Ask something..." required>
+        <button type="submit" class="btn btn-dark rounded-pill ms-2 px-4 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-send" viewBox="0 0 16 16">
+            <path d="M15.854.146a.5.5 0 0 1 .11.548l-5.5 13.5a.5.5 0 0 1-.94-.008L8.447 10.5l-3.638 3.638a.5.5 0 0 1-.854-.354V8.707l-2.793-2.793a.5.5 0 0 1 .353-.854h5.586l.854-2.134A.5.5 0 0 1 8.5 2h6a.5.5 0 0 1 .354.146z"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Offcanvas Sidebar for Mobile -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarLabel">
+  <div class="offcanvas-header">
+    <h5 id="sidebarLabel">PDF Chatbot</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if 'user' in session %}
+      <div class="d-flex align-items-center mb-4">
+        <img src="{{ session['user']['profile_pic'] if session['user']['profile_pic'] else url_for('static', filename='images/default-avatar.png') }}"
+             alt="Avatar" class="rounded-circle me-2" width="36" height="36">
+        <strong>{{ session['user']['username'] }}</strong>
+      </div>
+    {% endif %}
+
+    <form action="/select" method="post">
+      <select name="selected_pdf" class="form-select stylish-select mb-3" required>
+        {% for pdf in pdf_files %}
+          <option value="{{ pdf }}">{{ pdf[:25] ~ ('...' if pdf|length > 25 else '') }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary w-100">Load PDF</button>
+    </form>
+
+    {% if 'user' in session %}
+      <form action="{{ url_for('logout') }}" method="post" class="mt-4">
+        <button class="btn btn-outline-danger w-100">Logout</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function scrollToBottom() {
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function showTyping() {
+    document.getElementById("typingIndicator").style.display = "block";
+    scrollToBottom();
+  }
+
+  window.onload = scrollToBottom;
+</script>
+</body>
+</html>
