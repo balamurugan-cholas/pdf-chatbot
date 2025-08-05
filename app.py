@@ -316,4 +316,4 @@ def promote_user(user_id):
 
 if __name__ == '__main__':
     init_user_db()
-    app.run(host='0.0.0.0', port=10000)
+    app.run(host=0.0.0.0, port=10000)
