@@ -35,23 +35,22 @@ This is a Flask-based chatbot web application that allows admins to upload PDF f
 ## Project Structure
 
 ```
-pdf chatbot/
+📦 pdf_chatbot/
+├── static/                        # Static files
+│   ├── profile_pics/             # Uploaded profile pictures
+│   └── uploads/                  # Uploaded PDF files
 │
-├── static/
-│   └── profile_pics/
-│   └── uploads/
+├── templates/                    # HTML templates for Flask views
+│   ├── account.html              # User account page (register, login, etc.)
+│   ├── chat.html                 # Main chat interface
+│   └── admin.html                # Admin panel to manage users and PDFs
 │
-├── templates/
-│   └── account.html
-│   └── chat.html
-│   └── admin.html
-│
-├── app.py
-├── users.db
-├── requirements.txt
-├── .env
-├── .gitgnore
-└── README.md
+├── app.py                        # Main Flask application (routes, logic)
+├── users.db                      # SQLite database storing user info and roles
+├── requirements.txt              # Python dependencies
+├── .env                          # Environment variables (API key)
+├── .gitignore                    # Git ignore file (for sensitive files)
+└── README.md                     # Project overview and setup instructions
 ```
 
 ## Setup Instructions
