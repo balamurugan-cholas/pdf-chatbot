@@ -59,6 +59,7 @@ This is a Flask-based chatbot web application that allows admins to upload PDF f
 
 ```bash
 git clone https://github.com/balamurugan-cholas/pdf-chatbot.git
+cd image-enhancement-app
 ```
 
 ### 2. Create and Activate a Virtual Environment
